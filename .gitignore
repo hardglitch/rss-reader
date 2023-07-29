@@ -1,0 +1,6 @@
+*
+!/src/
+!/src/*.rs
+!.gitignore
+!*.lock
+!*.toml
