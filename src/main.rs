@@ -1,16 +1,13 @@
 mod db;
-mod core;
+mod channel;
+
 
 #[tokio::main]
 async fn main() {
 
-    db::get_or_create_db().await;
-    db::create_tables().await;
-
-    // let res = example_feed().await.unwrap();
-    // let items = res.items();
-    // println!("{:?}", &items[0].title);
-    // println!("{:?}", &items[0].description);
+    let db = db::init().await.unwrap();
+    let new_channel = channel::get_channel_by_url("https://samlab.ws/rss/").await.unwrap();
+    new_channel.add_channel_to_db(&db).await;
 
     // HelloWorld::new().unwrap().run().unwrap();
 }
