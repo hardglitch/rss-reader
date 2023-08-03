@@ -23,7 +23,8 @@ async fn create_tables(db: &Pool<Sqlite>) {
     let mut query = "CREATE TABLE IF NOT EXISTS channels (
         ch_id INTEGER PRIMARY KEY NOT NULL,
         title VARCHAR(100) NOT NULL,
-        link TEXT UNIQUE NOT NULL
+        link TEXT UNIQUE NOT NULL,
+        image BLOB
     );";
     sqlx::query(query)
         .execute(db)
