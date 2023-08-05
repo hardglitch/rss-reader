@@ -1,8 +1,0 @@
-slint::slint!{
-    export component HelloWorld {
-        Text {
-            text: "hello world";
-            color: green;
-        }
-    }
-}
