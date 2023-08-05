@@ -4,12 +4,15 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-slint = "1.1.1"
 tokio = { version = "1.29", features = ["rt-multi-thread", "macros"] }
 sqlx = { version = "0.7.1", features = ["runtime-tokio", "tls-native-tls", "sqlite"] }
-rss = "2.0.5"
-reqwest = "0.11.18"
+eframe = { version = "0.22", default-features = false, features = ["default_fonts", "glow", "persistence"] }
+rss = "2.0"
+reqwest = "0.11"
 bytes = "1.4"
 url = "2.4"
-image = "0.24.6"
+image = "0.24"
 serde_json = "1"
+
+[profile.dev.package."*"]  
+opt-level = 2

@@ -1,6 +1,10 @@
 *
 !/src/
 !/src/*.rs
+!/.github/
+!/.github/workflows/
+!/.github/workflows/*.yml
 !.gitignore
 !*.lock
 !*.toml
+!*.rs
