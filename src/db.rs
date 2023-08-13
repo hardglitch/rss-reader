@@ -1,47 +1,60 @@
-use std::error::Error;
-use sqlx::{migrate::MigrateDatabase, Sqlite, SqlitePool, Pool };
+use sqlx::{migrate::MigrateDatabase, Pool, Sqlite, SqlitePool};
 
 
-const DB_URL: &str = "sqlite://sqlite.db";
+pub struct Database {
+    url: String,
+}
 
-pub(crate) async fn init() -> Result<Pool<Sqlite>, Box<dyn Error>> {
-    if !Sqlite::database_exists(DB_URL).await.unwrap_or(false) {
-        match Sqlite::create_database(DB_URL).await {
-            Ok(_) => println!("Create db success"),
-            Err(error) => panic!("error: {}", error),
+impl Default for Database {
+    fn default() -> Self {
+        Self { url: "sqlite://sqlite.db".to_owned() }
+    }
+}
+
+impl Database {
+    async fn new(&self) {
+        if !Sqlite::database_exists(&self.url).await.unwrap_or(false) {
+            match Sqlite::create_database(&self.url).await {
+                Ok(_) => println!("DB created successfully"),
+                Err(error) => panic!("error: {}", error),
+            }
         }
     }
 
-    let db = SqlitePool::connect(DB_URL).await.unwrap();
-    create_tables(&db).await;
+    pub async fn get_pool(&self) -> Pool<Sqlite> {
+        match SqlitePool::connect(&self.url).await {
+            Ok(pool) => pool,
+            Err(e) => panic!("Could not establish DB connection: {}", e)
+        }
+    }
 
-    Ok(db)
+    async fn create_tables(&self, pool: &Pool<Sqlite>) {
+        let mut query = "CREATE TABLE IF NOT EXISTS channels (
+            ch_id INTEGER PRIMARY KEY NOT NULL,
+            title VARCHAR(100) NOT NULL,
+            link TEXT UNIQUE NOT NULL,
+            image BLOB
+        );";
+        sqlx::query(query).execute(pool).await.unwrap();
+    
+        query = "CREATE TABLE IF NOT EXISTS news (
+            news_id INTEGER PRIMARY KEY NOT NULL,
+            ch_id INTEGER NOT NULL,
+            header VARCHAR(250),
+            fulltext TEXT,
+            date INTEGER,
+            favorite BOOLEAN,
+            FOREIGN KEY(ch_id) REFERENCES channels(ch_id)
+        );";
+        sqlx::query(query).execute(pool).await.unwrap();
+    }
 }
 
 
-async fn create_tables(db: &Pool<Sqlite>) {
-    let mut query = "CREATE TABLE IF NOT EXISTS channels (
-        ch_id INTEGER PRIMARY KEY NOT NULL,
-        title VARCHAR(100) NOT NULL,
-        link TEXT UNIQUE NOT NULL,
-        image BLOB
-    );";
-    sqlx::query(query)
-        .execute(db)
-        .await
-        .unwrap();
 
-    query = "CREATE TABLE IF NOT EXISTS news (
-        news_id INTEGER PRIMARY KEY NOT NULL,
-        ch_id INTEGER NOT NULL,
-        header VARCHAR(250),
-        fulltext TEXT,
-        date INTEGER,
-        favorite BOOLEAN,
-        FOREIGN KEY(ch_id) REFERENCES channels(ch_id)
-    );";
-    sqlx::query(query)
-        .execute(db)
-        .await
-        .unwrap();
+pub async fn init() {
+    let db = Database::default();
+    db.new().await;
+    let pool = db.get_pool().await;
+    db.create_tables(&pool).await;
 }
