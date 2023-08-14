@@ -1,8 +1,9 @@
 use image::EncodableLayout;
 use rss;
-use sqlx::{FromRow, Row, SqlitePool};
+use sqlx::{FromRow, Row, Sqlite, Pool};
 use std::error::Error;
 use url::Url;
+
 
 #[derive(Debug, FromRow)]
 pub struct Channel {
@@ -12,7 +13,7 @@ pub struct Channel {
 }
 
 impl Channel {
-    pub async fn add_to_db(&self, db: &SqlitePool) {
+    pub async fn add_to_db(&self, db: &Pool<Sqlite>) {
         let img = serde_json::to_string(self.image.as_slice()).unwrap();
         let query = format!(
             "INSERT INTO channels (title, link, image) VALUES ({:?}, {:?}, {:?});",
@@ -23,7 +24,7 @@ impl Channel {
     }
 }
 
-pub async fn get_channel_from_db(link: &str, db: &SqlitePool) -> Result<Channel, Box<dyn Error>> {
+pub async fn get_channel_from_db(link: &str, db: &Pool<Sqlite>) -> Result<Channel, Box<dyn Error>> {
     let query = format!("SELECT * FROM channels WHERE link='{link}';");
 
     let result = sqlx::query(&query)
@@ -39,10 +40,32 @@ pub async fn get_channel_from_db(link: &str, db: &SqlitePool) -> Result<Channel,
     })
 }
 
+pub async fn get_channels_from_db(db: &Pool<Sqlite>) -> Result<Vec<Channel>, Box<dyn Error>> {
+    let query = format!("SELECT * FROM channels;");
+
+    let result = sqlx::query(&query)
+        .fetch_all(db)
+        .await
+        .expect("Row not found");
+
+    let mut chs = Vec::new();
+    for row in result {
+        let bytes: Vec<u8> = serde_json::from_str(row.get(3)).unwrap();
+        chs.push(
+            Channel {
+                title: row.get(1),
+                link: row.get(2),
+                image: bytes,
+            }
+        );
+    };
+    Ok(chs)
+}
+
 pub async fn get_channel_by_url(url: String) -> Result<Channel, Box<dyn Error>> {
     let parsed_url = Url::parse(&url)?;
 
-    let mut favicon_url = "".to_owned();
+    let mut favicon_url = String::new();
     favicon_url.push_str(&parsed_url.scheme());
     favicon_url.push_str("://");
     favicon_url.push_str(&parsed_url.host().unwrap().to_string());

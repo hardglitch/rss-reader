@@ -51,6 +51,12 @@ impl Database {
 }
 
 
+pub async fn def_pool() -> Pool<Sqlite> {
+    let db = Database::default();
+    let pool = db.get_pool().await;
+    pool
+}
+
 
 pub async fn init() {
     let db = Database::default();

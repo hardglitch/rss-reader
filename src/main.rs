@@ -15,19 +15,12 @@ use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
     //0. Create connection to DB
-    // let db = db::init().await.unwrap();
+    // let db = db::Database::default();
+    // let pool = db.get_pool().await;
 
     // 1. Get channel from web
-    // let new_channel = channel::get_channel_by_url("https://samlab.ws/rss".to_owned()).await?;
-    // new_channel.add_to_db(&db).await;
-
-    // 2. Get channel from DB
-    // let ch = channel::get_channel_from_db("http://samlab.ws/", &db).await?;
-
-    // let img = image::io::Reader::new(std::io::Cursor::new(&ch.image))
-    //     .with_guessed_format()?
-    //     .decode()?;
-    // let img_buff = img.into_rgba8().as_raw().as_slice();
+    // let new_channel = channel::get_channel_by_url("https://www.softexia.com/feed".to_owned()).await?;
+    // new_channel.add_to_db(&pool).await;
 
     let options = eframe::NativeOptions {
         initial_window_size: Some(egui::vec2(600.0, 400.0)),
