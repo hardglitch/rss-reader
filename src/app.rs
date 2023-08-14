@@ -11,20 +11,6 @@ pub struct App {
     rt: runtime::Runtime,
 }
 
-
-// impl Default for App {
-//     fn default() -> Self {
-//         Self {
-//             image: RetainedImage::from_image_bytes(
-//                 "favicon.ico",
-//                 image::load_from_memory_with_format(img_buff, image::ImageFormat::Png)?,
-//             )
-//             .unwrap()
-//         }
-//     }
-// }
-
-
 impl App {
 
     pub fn new(ctx: &CreationContext) -> Self {
@@ -49,8 +35,7 @@ impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
 
         let chs = self.rt.block_on(async move {
-            let pool = db::def_pool().await;
-            channel::get_channels_from_db(&pool).await.unwrap()
+            channel::get_channels_from_db().await.unwrap()
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {

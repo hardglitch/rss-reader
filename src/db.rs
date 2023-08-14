@@ -21,7 +21,7 @@ impl Database {
         }
     }
 
-    pub async fn get_pool(&self) -> Pool<Sqlite> {
+    async fn get_pool(&self) -> Pool<Sqlite> {
         match SqlitePool::connect(&self.url).await {
             Ok(pool) => pool,
             Err(e) => panic!("Could not establish DB connection: {}", e)
