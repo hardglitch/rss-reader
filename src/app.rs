@@ -39,7 +39,7 @@ impl App {
             db::init().await;
         });
 
-        Self { rt: rt }
+        Self { rt }
     }
 }
 
@@ -50,15 +50,14 @@ impl eframe::App for App {
 
         let chs = self.rt.block_on(async move {
             let pool = db::def_pool().await;
-            let chs = channel::get_channels_from_db(&pool).await.unwrap();
-            chs
+            channel::get_channels_from_db(&pool).await.unwrap()
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
             for ch in chs {
                 let img = RetainedImage::from_image_bytes(
                     "favicon.ico",
-                    &ch.image.as_slice(),
+                    ch.image.as_slice(),
                 )
                 .unwrap();
                 ui.vertical(|ui| {

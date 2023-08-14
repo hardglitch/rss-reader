@@ -12,7 +12,7 @@ impl Default for Database {
 }
 
 impl Database {
-    async fn new(&self) {
+    async fn create(&self) {
         if !Sqlite::database_exists(&self.url).await.unwrap_or(false) {
             match Sqlite::create_database(&self.url).await {
                 Ok(_) => println!("DB created successfully"),
@@ -53,14 +53,13 @@ impl Database {
 
 pub async fn def_pool() -> Pool<Sqlite> {
     let db = Database::default();
-    let pool = db.get_pool().await;
-    pool
+    db.get_pool().await
 }
 
 
 pub async fn init() {
     let db = Database::default();
-    db.new().await;
+    db.create().await;
     let pool = db.get_pool().await;
     db.create_tables(&pool).await;
 }
