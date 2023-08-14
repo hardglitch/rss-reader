@@ -1,7 +1,8 @@
 use image::EncodableLayout;
-use sqlx::{FromRow, Row, Sqlite, Pool};
+use sqlx::{FromRow, Row};
 use std::error::Error;
 use url::Url;
+use crate::db;
 
 
 #[derive(Debug, FromRow)]
@@ -14,23 +15,25 @@ pub struct Channel {
 impl Channel {
 
     #[allow(dead_code)]
-    pub async fn add_to_db(&self, db: &Pool<Sqlite>) {
+    pub async fn add_to_db(&self) {
+        let pool = db::def_pool().await;
         let img = serde_json::to_string(self.image.as_slice()).unwrap();
         let query = format!(
             "INSERT INTO channels (title, link, image) VALUES ({:?}, {:?}, {:?});",
             self.title, self.link, img
         );
 
-        sqlx::query(&query).execute(db).await.unwrap();
+        sqlx::query(&query).execute(&pool).await.unwrap();
     }
 }
 
 #[allow(dead_code)]
-pub async fn get_channel_from_db(link: &str, db: &Pool<Sqlite>) -> Result<Channel, Box<dyn Error>> {
-    let query = format!("SELECT * FROM channels WHERE link='{link}';");
+pub async fn get_channel_from_db(id: usize) -> Result<Channel, Box<dyn Error>> {
+    let query = format!("SELECT * FROM channels WHERE id='{id}';");
+    let pool = db::def_pool().await;
 
     let result = sqlx::query(&query)
-        .fetch_one(db)
+        .fetch_one(&pool)
         .await
         .expect("Row not found");
 
@@ -42,11 +45,12 @@ pub async fn get_channel_from_db(link: &str, db: &Pool<Sqlite>) -> Result<Channe
     })
 }
 
-pub async fn get_channels_from_db(db: &Pool<Sqlite>) -> Result<Vec<Channel>, Box<dyn Error>> {
+pub async fn get_channels_from_db() -> Result<Vec<Channel>, Box<dyn Error>> {
     let query = format!("SELECT * FROM channels;");
+    let pool = db::def_pool().await;
 
     let result = sqlx::query(&query)
-        .fetch_all(db)
+        .fetch_all(&pool)
         .await
         .expect("Row not found");
 

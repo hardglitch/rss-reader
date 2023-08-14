@@ -14,13 +14,8 @@ use std::error::Error;
 
 
 fn main() -> Result<(), Box<dyn Error>> {
-    //0. Create connection to DB
-    // let db = db::Database::default();
-    // let pool = db.get_pool().await;
-
-    // 1. Get channel from web
     // let new_channel = channel::get_channel_by_url("https://www.softexia.com/feed".to_owned()).await?;
-    // new_channel.add_to_db(&pool).await;
+    // new_channel.add_to_db().await;
 
     let options = eframe::NativeOptions {
         initial_window_size: Some(egui::vec2(600.0, 400.0)),
