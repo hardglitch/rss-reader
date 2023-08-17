@@ -9,7 +9,7 @@
 mod channel;
 mod db;
 mod app;
-use eframe::egui;
+use eframe::{egui, NativeOptions};
 use std::error::Error;
 
 
@@ -17,8 +17,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // let new_channel = channel::get_channel_by_url("https://www.softexia.com/feed".to_owned()).await?;
     // new_channel.add_to_db().await;
 
-    let options = eframe::NativeOptions {
-        initial_window_size: Some(egui::vec2(600.0, 400.0)),
+    let options = NativeOptions {
+        min_window_size: Some(egui::vec2(600.0, 300.0)),
         ..Default::default()
     };
 
