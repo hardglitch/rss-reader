@@ -46,7 +46,7 @@ impl eframe::App for App {
 
                 // Area 1
                 ui.vertical(|ui| {
-                    ui.set_width(20.0);
+                    ui.set_width(16.0);
                     ui.set_height(*main_height);
 
 
@@ -101,8 +101,52 @@ impl eframe::App for App {
                 
                 // Areas 2 and 3
                 ui.vertical(|ui| {
-                    ui.set_height(200.0);
-                    ui.label("Area 2");
+
+                    ui.vertical(|ui: &mut egui::Ui| {
+                        ui.set_height(200.0);
+
+                        ui.label("Area 2");
+                        ui.label("Area 2");
+                        ui.label("Area 2");
+                        ui.label("Area 2");
+                        ui.label("Area 2");
+                        ui.label("Area 2");
+                        ui.label("Area 2");
+                        ui.label("Area 2");
+                        ui.label("Area 2");
+                        ui.label("Area 2");
+                        ui.label("Area 2");
+                        ui.label("Area 2");
+                        ui.label("Area 2");
+                        ui.label("Area 2");
+                        ui.label("Area 2");
+                        ui.label("Area 2");
+                    });
+
+                    ui.vertical(|ui: &mut egui::Ui| {
+                        // ui.set_height(*main_height);
+
+                        ui.label("Area 3");
+                        ui.label("Area 3");
+                        ui.label("Area 3");
+                        ui.label("Area 3");
+                        ui.label("Area 3");
+                        ui.label("Area 3");
+                        ui.label("Area 3");
+                        ui.label("Area 3");
+                        ui.label("Area 3");
+                        ui.label("Area 3");
+                        ui.label("Area 3");
+                        ui.label("Area 3");
+                        ui.label("Area 3");
+                        ui.label("Area 3");
+                        ui.label("Area 3");
+                        ui.label("Area 3");
+                        ui.label("Area 3");
+                        ui.label("Area 3");
+                        ui.label("Area 3");
+                    });
+
                 });
 
             });

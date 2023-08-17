@@ -18,7 +18,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // new_channel.add_to_db().await;
 
     let options = NativeOptions {
-        initial_window_size: Some(egui::vec2(600.0, 400.0)),
+        min_window_size: Some(egui::vec2(600.0, 300.0)),
         ..Default::default()
     };
 
