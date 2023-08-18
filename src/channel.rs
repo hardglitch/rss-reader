@@ -2,6 +2,7 @@ use image::EncodableLayout;
 use sqlx::{FromRow, Row};
 use std::error::Error;
 use url::Url;
+use rss;
 use crate::db;
 
 

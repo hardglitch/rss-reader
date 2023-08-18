@@ -11,7 +11,7 @@ pub struct App {
 impl App {
 
     pub fn new(ctx: &CreationContext) -> Self {
-        ctx.egui_ctx.set_pixels_per_point(1.25);
+        ctx.egui_ctx.set_pixels_per_point(1.0);
 
         let mut fonts = egui::FontDefinitions::default();
         egui_phosphor::add_to_fonts(&mut fonts, egui_phosphor::Variant::Regular);
@@ -41,12 +41,14 @@ impl eframe::App for App {
 
         egui::CentralPanel::default().show(ctx, |ui| {
             let main_height = Box::new(ui.available_height());
+            let main_width = Box::new(ui.available_width());
+            const AREA_1_WIDTH: f32 = 16.0;
 
             ui.horizontal(|ui| {
 
                 // Area 1
                 ui.vertical(|ui| {
-                    ui.set_width(16.0);
+                    ui.set_width(*&AREA_1_WIDTH);
                     ui.set_height(*main_height);
 
 
@@ -102,49 +104,59 @@ impl eframe::App for App {
                 // Areas 2 and 3
                 ui.vertical(|ui| {
 
-                    ui.vertical(|ui: &mut egui::Ui| {
-                        ui.set_height(200.0);
+                    egui::ScrollArea::vertical()
+                        .id_source("Area_2")
+                        .max_height(200.)
+                        .show(ui, |ui| {
 
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
+                            ui.set_min_height(200.);
+                            ui.set_min_width(*main_width - *&AREA_1_WIDTH);
+
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
                     });
 
-                    ui.vertical(|ui: &mut egui::Ui| {
-                        // ui.set_height(*main_height);
+                    egui::ScrollArea::vertical()
+                        .id_source("Area_3")
+                        .max_height(100.)
+                        .show(ui, |ui| {
 
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
+                            ui.set_min_height(200.);
+                            ui.set_min_width(*main_width - *&AREA_1_WIDTH);
+
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
                     });
 
                 });
