@@ -2,6 +2,7 @@ use eframe::{epaint::Vec2, CreationContext, egui};
 use egui_extras::RetainedImage;
 use tokio::runtime;
 use crate::{channel, db};
+// use std::sync::Arc;
 
 
 pub struct App {
@@ -11,7 +12,7 @@ pub struct App {
 impl App {
 
     pub fn new(ctx: &CreationContext) -> Self {
-        ctx.egui_ctx.set_pixels_per_point(1.25);
+        ctx.egui_ctx.set_pixels_per_point(1.0);
 
         let mut fonts = egui::FontDefinitions::default();
         egui_phosphor::add_to_fonts(&mut fonts, egui_phosphor::Variant::Regular);
@@ -22,9 +23,16 @@ impl App {
             .build()
             .unwrap();
 
-        rt.spawn(async move {
+        rt.block_on(async move {
             db::init().await;
         });
+
+        // let chs = Arc::new(tokio::sync::Mutex::new(Vec::<channel::Channel>::new()));
+        // rt.spawn(async move {
+        //     let pool = db::def_pool().await;
+        //     // let mut chs_c = chs.lock().await;
+        //     chs = channel::get_all_channels(&pool).await.unwrap();
+        // });
 
         Self { rt }
     }
@@ -36,17 +44,21 @@ impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
 
         let chs = self.rt.block_on(async move {
-            channel::get_channels_from_db().await.unwrap()
+            let pool = db::def_pool().await;
+            channel::get_all_channels(&pool).await.unwrap()
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
             let main_height = Box::new(ui.available_height());
+            let main_width = Box::new(ui.available_width());
+            const AREA_1_WIDTH: f32 = 16.0;
+            const ICON_SIZE: f32 = 16.0;
 
             ui.horizontal(|ui| {
 
                 // Area 1
                 ui.vertical(|ui| {
-                    ui.set_width(16.0);
+                    ui.set_width(AREA_1_WIDTH);
                     ui.set_height(*main_height);
 
 
@@ -73,6 +85,7 @@ impl eframe::App for App {
 
 
                     let area_1_2 = |ui: &mut egui::Ui| {
+
                         for ch in chs {
                     
                             let ch_icon = |ui| {
@@ -84,7 +97,7 @@ impl eframe::App for App {
                                 .unwrap();
         
                                 if img
-                                    .show_max_size(ui, Vec2{x:16.0, y:16.0})
+                                    .show_max_size(ui, Vec2{x:ICON_SIZE, y:ICON_SIZE})
                                     .on_hover_text(&ch.title)
                                     .interact(egui::Sense::click())
                                     .clicked() {
@@ -102,49 +115,61 @@ impl eframe::App for App {
                 // Areas 2 and 3
                 ui.vertical(|ui| {
 
-                    ui.vertical(|ui: &mut egui::Ui| {
-                        ui.set_height(200.0);
+                    egui::ScrollArea::vertical()
+                        .id_source("Area_2")
+                        .max_height(200.)
+                        .show(ui, |ui| {
 
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
-                        ui.label("Area 2");
+                            ui.set_min_height(200.);
+                            ui.set_min_width(*main_width - AREA_1_WIDTH);
+
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
+                            ui.label("Area 2");
                     });
 
-                    ui.vertical(|ui: &mut egui::Ui| {
-                        // ui.set_height(*main_height);
+                    ui.add_space(10.);
 
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
-                        ui.label("Area 3");
+                    egui::ScrollArea::vertical()
+                        .id_source("Area_3")
+                        .max_height(100.)
+                        .show(ui, |ui| {
+
+                            ui.set_min_height(200.);
+                            ui.set_min_width(*main_width - AREA_1_WIDTH);
+
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
+                            ui.label("Area 3");
                     });
 
                 });

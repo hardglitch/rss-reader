@@ -9,13 +9,15 @@
 mod channel;
 mod db;
 mod app;
+mod news;
 use eframe::{egui, NativeOptions};
 use std::error::Error;
 
 
 fn main() -> Result<(), Box<dyn Error>> {
+    // let pool = db::def_pool().await;
     // let new_channel = channel::get_channel_by_url("https://www.softexia.com/feed".to_owned()).await?;
-    // new_channel.add_to_db().await;
+    // new_channel.add(&pool).await;
 
     let options = NativeOptions {
         min_window_size: Some(egui::vec2(600.0, 300.0)),
@@ -25,7 +27,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     eframe::run_native(
         "rss-reader", 
         options, 
-        Box::new(|ctx| Box::new(app::App::new(ctx)))
+        Box::new(|cc| {
+            Box::new(app::App::new(cc))
+        })
     )?;
 
     Ok(())
