@@ -1,12 +1,10 @@
 use eframe::{epaint::Vec2, CreationContext, egui};
 use egui_extras::RetainedImage;
-use tokio::runtime;
 use crate::{channel, db};
-// use std::sync::Arc;
 
 
 pub struct App {
-    rt: runtime::Runtime,
+    chs: Vec<channel::Channel>,
 }
 
 impl App {
@@ -18,7 +16,7 @@ impl App {
         egui_phosphor::add_to_fonts(&mut fonts, egui_phosphor::Variant::Regular);
         ctx.egui_ctx.set_fonts(fonts);
 
-        let rt = runtime::Builder::new_multi_thread()
+        let rt = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()
             .unwrap();
@@ -27,14 +25,12 @@ impl App {
             db::init().await;
         });
 
-        // let chs = Arc::new(tokio::sync::Mutex::new(Vec::<channel::Channel>::new()));
-        // rt.spawn(async move {
-        //     let pool = db::def_pool().await;
-        //     // let mut chs_c = chs.lock().await;
-        //     chs = channel::get_all_channels(&pool).await.unwrap();
-        // });
+        let chs = rt.block_on(async move {
+            let pool = db::def_pool().await;
+            channel::get_all_channels(&pool).await.unwrap()
+        });
 
-        Self { rt }
+        Self { chs }
     }
 }
 
@@ -42,11 +38,6 @@ impl App {
 impl eframe::App for App {
 
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-
-        let chs = self.rt.block_on(async move {
-            let pool = db::def_pool().await;
-            channel::get_all_channels(&pool).await.unwrap()
-        });
 
         egui::CentralPanel::default().show(ctx, |ui| {
             let main_height = Box::new(ui.available_height());
@@ -86,6 +77,7 @@ impl eframe::App for App {
 
                     let area_1_2 = |ui: &mut egui::Ui| {
 
+                        let chs: &Vec<channel::Channel> = self.chs.as_ref();
                         for ch in chs {
                     
                             let ch_icon = |ui| {
